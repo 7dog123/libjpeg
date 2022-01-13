@@ -1,0 +1,26 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      run: |
+        mkdir build ; cd build
+        #CC=/usr/local/lib/android/sdk/ndk/23.1.7779620/toolchains/llvm/prebuild/linux-x86_64/bin/    
+        ./configure --target=arm-linux-androideabi21 CFLAGS="-DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -Wformat -Werror=format-security -fexceptions -O3 -g -DNDEBUG -DANDROID_ABI=armeabi-v7a -DANDROID_ARM_MODE=arm -DANDROID_PLATFORM=android-21"
+    - name: make
+      run: cd build ; make
+    - name: make check
+      run: cd build make check
+    - name: make distcheck
+      run: cd build make distcheck
